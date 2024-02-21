@@ -13,6 +13,7 @@ module.exports = {
       colors: {
         khakiG: "#709D69",
         khakiB: "#927D5E",
+        khakiGr: "#6F7378",
       },
       boxShadow: {
         custom: "0 4px 6px 0 rgba(0, 0, 0, 0.5)",

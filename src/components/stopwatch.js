@@ -18,20 +18,21 @@ function Stopwatch({
       const interval = setInterval(() => {
         setSec((prevSec) => {
           if (prevSec < 59) {
+            setWorkedTime(hour / 60 + min + prevSec / 60);
             return prevSec + 1;
           } else {
             setSec(0);
             setMin((prevMin) => {
               if (prevMin < 59) {
                 const newMin = prevMin + 1;
-                setWorkedTime(hour / 60 + newMin);
+                setWorkedTime(hour / 60 + newMin + sec / 60);
                 setTimeLabel(`${hour} hour(s) ${newMin} minute(s)`);
                 return newMin;
               } else {
                 setMin(0);
                 setHour((prevHour) => {
                   const newHour = prevHour + 1;
-                  setWorkedTime(newHour / 60 + min);
+                  setWorkedTime(newHour / 60 + min + sec / 60);
                   setTimeLabel(`${newHour} hour(s) ${min} minute(s)`);
                   return newHour;
                 });

@@ -2,16 +2,47 @@ import { React, useState, useEffect } from "react";
 import { usePageContext } from "../PageContext";
 import Stopwatch from "../components/stopwatch";
 import ErrorPopup from "../components/rateError";
-function Main() {
+import axios from "axios";
+function Main({ loggedIn, loginButton }) {
   const [workedTime, setWorkedTime] = useState(0);
   const [timeLabel, setTimeLabel] = useState("");
   const [start, setStart] = useState(false);
   const [paused, setPaused] = useState(false);
   const [startLabel, setStartLabel] = useState("Clock In");
   const [pauseLabel, setPauseLabel] = useState("Break");
-  const [rate, setRate] = useState("");
+  const [rate, setRate] = useState();
+
   const [error, setError] = useState(false);
   const [hArray, setHArray] = useState([]);
+  const currentDate = new Date();
+  const dateString = currentDate.toLocaleDateString("en-US", {
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const processor = {
+    date: dateString,
+    time: parseFloat(workedTime.toFixed(2)),
+    pay: parseFloat(((workedTime / 60) * rate).toFixed(2)),
+  };
+  const addTime = async (e) => {
+    // let temptime = processor;
+    try {
+      await axios.post(
+        "http://localhost:5000/Auth/add-time",
+        { time: e },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      localStorage.setItem("time", JSON.stringify(processor)); //store to local
+    } catch (error) {
+      console.error("Error adding score:", error);
+    }
+  };
   useEffect(() => {
     if (!start) {
       setPaused(false);
@@ -19,13 +50,20 @@ function Main() {
       console.log(hArray);
     }
   }, [start]);
+  useEffect(() => {
+    if (!loggedIn) {
+      setToken("");
+      console.log("it worked my dude");
+    }
+  }, [loggedIn]);
   const {
     mainPage,
     setMainPage,
-    settingsPage,
-    setSettingsPage,
+
     hoursPage,
     setHoursPage,
+    token,
+    setToken,
   } = usePageContext();
   if (!mainPage) return null;
 
@@ -34,7 +72,8 @@ function Main() {
       setStart(!start);
       !start ? setStartLabel("Clock Out") : setStartLabel("Clock In");
       if (start) {
-        setHArray([...hArray, workedTime]);
+        setHArray([...hArray, processor]);
+        addTime(processor);
       }
     } else {
       setError(true);
@@ -49,11 +88,6 @@ function Main() {
   const HPg = () => {
     setMainPage(false);
     setHoursPage(true);
-  };
-
-  const SPg = () => {
-    setMainPage(false);
-    setSettingsPage(true);
   };
 
   return (
@@ -99,11 +133,14 @@ function Main() {
         View Hours
       </button>
       <button
-        onClick={SPg}
-        className="px-4 py-2 border-4 border-khakiG text-3xl bg-yellow-500 text-white rounded my-4 shadow-custom hover:border-khakiB active:scale-95 shadow-lg"
+        onClick={loginButton}
+        className="px-4 py-2 mb-5 border-4 border-khakiG text-3xl bg-yellow-500 text-white rounded my-4 shadow-custom hover:border-khakiB active:scale-95 shadow-lg"
       >
-        Settings
+        {loggedIn ? "Logout" : "Login"}
       </button>
+      <h3 className="text-white bg-khakiG mb-40 mt-20 px-4">
+        {loggedIn ? " " : "Login to store and view hours"}
+      </h3>
     </>
   );
 }

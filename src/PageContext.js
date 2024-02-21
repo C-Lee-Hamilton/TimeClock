@@ -6,13 +6,12 @@ export const usePageContext = () => useContext(PageContext);
 
 export const PageProvider = ({ children }) => {
   const [mainPage, setMainPage] = useState(true);
-  const [settingsPage, setSettingsPage] = useState(false);
+
   const [hoursPage, setHoursPage] = useState(false);
+  const [token, setToken] = useState();
   const backButton = () => {
     setMainPage(true);
-    if (settingsPage) {
-      setSettingsPage(false);
-    } else if (hoursPage) {
+    if (hoursPage) {
       setHoursPage(false);
     }
   };
@@ -22,11 +21,12 @@ export const PageProvider = ({ children }) => {
       value={{
         mainPage,
         setMainPage,
-        settingsPage,
-        setSettingsPage,
+
         hoursPage,
         setHoursPage,
         backButton,
+        token,
+        setToken,
       }}
     >
       {children}
