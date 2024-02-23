@@ -1,45 +1,26 @@
-import { React, useState, useEffect } from "react";
+import { React, useState } from "react";
 import { usePageContext } from "../PageContext";
+import Report from "../components/detailedReport";
 import axios from "axios";
 function Hours() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [specificDate, setSpecificDate] = useState("");
-  const [hoursForSpecificDate, setHoursForSpecificDate] = useState("");
-  const [payForSpecificDate, setPayForSpecificDate] = useState("");
-  const { mainPage, setMainPage, token, hoursPage, setHoursPage, backButton } =
-    usePageContext();
-  useEffect(() => {
-    const fetchTimeForDate = async (specificDate) => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/auth/time-for-date",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Make sure your token is correctly set up
-            },
-            params: { specificDate },
-          }
-        );
-        console.log(
-          `Total minutes for ${specificDate}: ${response.data.totalHours}`
-        );
-        setHoursForSpecificDate(response.data.totalHours);
-        setPayForSpecificDate(response.data.totalPay);
-      } catch (error) {
-        console.error("Error fetching hours:", error);
-      }
-    };
+  const [isDetailed, setIsDetailed] = useState(false);
+  const [detailedArray, setDetailedArray] = useState([]);
+  const [totalHr, setTotalHr] = useState();
+  const [totalPay, setTotalPay] = useState();
 
-    // Format today's date as MM/DD/YY
-    const today = new Date();
-    const date = `${(today.getMonth() + 1).toString().padStart(2, "0")}/${today
-      .getDate()
-      .toString()
-      .padStart(2, "0")}/${today.getFullYear().toString().slice(-2)}`;
+  const { setMainPage, token, hoursPage, setHoursPage } = usePageContext();
+  const backButton = () => {
+    setDetailedArray([]);
+    setStartDate("");
+    setEndDate("");
+    setTotalHr();
+    setTotalPay();
+    setHoursPage(false);
+    setMainPage(true);
+  };
 
-    fetchTimeForDate(date);
-  }, [token]);
   if (!hoursPage) return null;
 
   const fetchHoursInRange = async () => {
@@ -48,35 +29,52 @@ function Hours() {
         "http://localhost:5000/auth/time-range",
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Ensure your token is correctly set up
+            Authorization: `Bearer ${token}`,
           },
           params: { startDate, endDate },
         }
       );
-      console.log(
-        `Total Minutes: ${response.data.totalHours} Total Pay: ${response.data.totalPay}`
-      );
+      setTotalHr(response.data.totalHours);
+      setTotalPay(response.data.totalPay);
     } catch (error) {
       console.error("Error fetching hours:", error);
     }
   };
-  // const rangeClick = () => {
-  //   if (startDate !== endDate) {
-  //     fetchHoursInRange();
-  //   } else if (startDate === endDate) {
+  const fetchDetailed = async () => {
+    setIsDetailed(!isDetailed);
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/auth/detailed-report",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: { startDate, endDate },
+        }
+      );
 
-  //   }
-  // };
+      setDetailedArray(response.data.entries);
+    } catch (error) {
+      console.error("Error fetching hours:", error);
+    }
+  };
 
   return (
     <>
       <div className="flex mb-80 flex-col items-center justify-center space-y-10 my-8">
-        <h2 className="text-3xl font-bold text-center font-skran text-khakiG font-bold ">
-          Today
-        </h2>
-        <div className="text-3xl font-skran text-khakiG font-bold ">
-          {hoursForSpecificDate}hrs ${payForSpecificDate}
-        </div>
+        <div className="text-3xl font-skran text-khakiG font-bold "></div>
+        <h1
+          style={{ visibility: totalHr > 0 ? "visible" : "hidden" }}
+          className="text-2xl font-skran text-khakiG font-bold "
+        >
+          {totalHr} Hours
+        </h1>
+        <h1
+          style={{ visibility: totalPay > 0 ? "visible" : "hidden" }}
+          className="text-2xl font-skran text-khakiG font-bold "
+        >
+          ${totalPay}
+        </h1>
         <div>
           <input
             className="px-4 py-2 border-2 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
@@ -100,12 +98,23 @@ function Hours() {
           Get Hours
         </button>
         <button
+          onClick={fetchDetailed}
+          className="px-4 py-2 border-4 border-khakiG text-3xl bg-yellow-500 text-white rounded shadow-custom hover:bg-yellow-600 active:scale-95 transition duration-150 ease-in-out"
+        >
+          Get Detailed Report
+        </button>
+        <button
           onClick={backButton}
           className="px-4 py-2 border-4 border-khakiG text-3xl bg-green-500 text-white rounded my-4 shadow-custom hover:border-khakiB hover:bg-green-600 active:scale-95 shadow-lg"
         >
           Back
         </button>
       </div>
+      <Report
+        isDetailed={isDetailed}
+        setIsDetailed={setIsDetailed}
+        detailedArray={detailedArray}
+      />
     </>
   );
 }

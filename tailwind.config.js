@@ -23,6 +23,9 @@ module.exports = {
         default: "2.5px 2.5px 3.5px rgba(146, 125, 94, 0.6)", // A simple shadow with 50% opacity
         dark: "3px 3px 4px rgba(146, 125, 94, 0.75)", // A darker shadow
       },
+      screens: {
+        sm: "300px",
+      },
     },
   },
   variants: {

@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState } from "react";
 import axios from "axios";
 function Creator({ create, setCreate }) {
   const [newUser, setNewUser] = useState();
@@ -7,7 +7,6 @@ function Creator({ create, setCreate }) {
   const [registerSuccess, setRegisterSuccess] = useState();
 
   if (!create) return null;
-  // Don't render the component if there's no message.
   const closer = () => {
     setCreate(false);
     setNewUser();

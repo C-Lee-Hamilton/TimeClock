@@ -21,7 +21,6 @@ export const PageProvider = ({ children }) => {
       value={{
         mainPage,
         setMainPage,
-
         hoursPage,
         setHoursPage,
         backButton,

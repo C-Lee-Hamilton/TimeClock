@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState } from "react";
 import { usePageContext } from "../PageContext";
 import CreateAccount from "./createAccount";
 import axios from "axios";
@@ -8,9 +8,9 @@ function LoginMessage({ login, setLogin, setLoggedIn }) {
   const [passLogin, setPassLogin] = useState("");
   const [create, setCreate] = useState(false);
   const [err, setErr] = useState("");
-  const { token, setToken } = usePageContext("");
+  const { setToken } = usePageContext("");
   if (!login) return null;
-  // Don't render the component if there's no message.
+
   const closer = () => {
     setLogin(false);
     setUserLogin("");
@@ -28,16 +28,11 @@ function LoginMessage({ login, setLogin, setLoggedIn }) {
       });
 
       if (response.data.success) {
-        console.log("Login successful");
-        console.log(response.data.user.username);
-        setLogin(false);
         setToken(response.data.token);
-        setErr("");
+        setErr("Login Success");
         setLoggedIn(true);
       } else {
-        console.log("Login failed:", response.data.message);
         setErr("Login Failed, Try Again");
-        // Handle login failure
       }
     } catch (error) {
       console.error("Error during login:", error);

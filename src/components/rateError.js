@@ -1,7 +1,7 @@
 import React from "react";
 
 function ErrorMessage({ error, setError }) {
-  if (!error) return null; // Don't render the component if there's no message.
+  if (!error) return null;
   const closer = () => {
     setError(false);
   };
