@@ -30,7 +30,7 @@ function Stopwatch({ setWorkedTime, start, paused }) {
             });
           }
         });
-      }, 100);
+      }, 1000);
 
       return () => clearInterval(interval);
     } else if (!start) {
