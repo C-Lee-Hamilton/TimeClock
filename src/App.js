@@ -16,6 +16,7 @@ function App() {
   const [currentTime, setCurrentTime] = useState(formatTime());
   const [login, setLogin] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [rate, setRate] = useState();
 
   const loginButton = () => {
     loggedIn ? handleLogout() : setLogin(!login);
@@ -23,7 +24,7 @@ function App() {
   const handleLogout = async () => {
     try {
       await axios.post("http://localhost:5000/Auth/logout");
-
+      setRate("");
       setLoggedIn(false);
     } catch (error) {
       console.error("Error during logout:", error);
@@ -52,7 +53,12 @@ function App() {
         <div className="App flex flex-col items-center justify-center min-h-screen">
           <div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50"></div>
 
-          <Main loggedIn={loggedIn} loginButton={loginButton} />
+          <Main
+            loggedIn={loggedIn}
+            loginButton={loginButton}
+            rate={rate}
+            setRate={setRate}
+          />
 
           <Hours />
         </div>

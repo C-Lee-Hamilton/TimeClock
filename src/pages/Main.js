@@ -3,13 +3,12 @@ import { usePageContext } from "../PageContext";
 import Stopwatch from "../components/stopwatch";
 import ErrorPopup from "../components/rateError";
 import axios from "axios";
-function Main({ loggedIn, loginButton }) {
+function Main({ loggedIn, loginButton, rate, setRate }) {
   const [workedTime, setWorkedTime] = useState(0);
   const [start, setStart] = useState(false);
   const [paused, setPaused] = useState(false);
   const [startLabel, setStartLabel] = useState("Clock In");
   const [pauseLabel, setPauseLabel] = useState("Break");
-  const [rate, setRate] = useState();
 
   const [error, setError] = useState(false);
 
